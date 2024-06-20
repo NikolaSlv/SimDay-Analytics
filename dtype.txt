@@ -1,0 +1,10 @@
+UTCISO8601:str
+WhoAmI:str
+DewPointF:float
+tempF:float
+GlobalHorizontalIrradianceWM2:float
+CloudCoverPerc:float
+DirectHorizontalIrradianceWM2:float
+WindSpeedmph:float
+WindDirection:float
+WindSpeed100mph:float
