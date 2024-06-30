@@ -1,0 +1,8 @@
+WhoAmI:str
+Longitude:str
+Latitude:str
+ElevationMeters:str
+ICAO:str
+WMO:str
+Region:str
+Country2:str
