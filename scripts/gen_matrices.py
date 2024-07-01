@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import time
+from multiprocessing import Pool, cpu_count
 
 def load_dtype(file_path):
     '''
@@ -22,6 +23,23 @@ def load_dtype(file_path):
             elif val == 'float':
                 dtype[key] = float
     return dtype
+
+def normalize_matrix_columns(matrix):
+    '''
+    Normalize each column of the matrix.
+
+    Parameters:
+    matrix (ndarray): The matrix to normalize.
+
+    Returns:
+    ndarray: The normalized matrix.
+    '''
+    for i in range(matrix.shape[1]):
+        column = matrix[:, i]
+        norm = np.linalg.norm(column)
+        if norm != 0:
+            matrix[:, i] = column / norm
+    return matrix
 
 def add_segment_to_dict(df, segments, current_segment, current_utc):
     '''
@@ -70,23 +88,6 @@ def split_data_into_segments(df):
 
     return segments
 
-def normalize_matrix_columns(matrix):
-    '''
-    Normalize each column of the matrix.
-
-    Parameters:
-    matrix (ndarray): The matrix to normalize.
-
-    Returns:
-    ndarray: The normalized matrix.
-    '''
-    for i in range(matrix.shape[1]):
-        column = matrix[:, i]
-        norm = np.linalg.norm(column)
-        if norm != 0:
-            matrix[:, i] = column / norm
-    return matrix
-
 def concatenate_hours(segments):
     '''
     Concatenate the segments into days and normalize each day's matrices column by column.
@@ -104,7 +105,6 @@ def concatenate_hours(segments):
             days[day] = {}
             days[day]['mat1'] = segments[key][:, :2]
             days[day]['mat2'] = segments[key][:, 2:5]
-            # For the wind conditions matrix, exclude the wind direction column
             days[day]['mat3'] = np.concatenate((segments[key][:, 5:6], segments[key][:, 7:]), axis=1)
         else:
             days[day]['mat1'] = np.concatenate((days[day]['mat1'], segments[key][:, :2]), axis=0)
@@ -137,18 +137,19 @@ def save_matrices(year, month, days, output_path):
         np.save(output_path + f'mat2_{key}.npy', days[key]['mat2'])
         np.save(output_path + f'mat3_{key}.npy', days[key]['mat3'])
 
-def load_file(file_path, dtype):
+def process_file(file_path, dtype):
     '''
-    Loads and processes the data from a file.
+    Processes a single file.
 
     Parameters:
     file_path (str): The path to the file.
+    dtype (dict): A dictionary containing the data types for the columns.
 
     Returns:
     None
     '''
     df = pd.read_csv(file_path, dtype=dtype)
-    df = df.iloc[:, 1:] # Remove the first column
+    df = df.iloc[:, 1:]  # Remove the first column
     print(f"File loaded: {file_path}, shape: {df.shape}")
 
     segments = split_data_into_segments(df)
@@ -159,12 +160,14 @@ def load_file(file_path, dtype):
     month = year_month[4:]
     save_matrices(year, month, days, './output/')
 
-def run(input):
-    print(f'Running gen_matrices on {input}')
+def run_parallel(file_paths):
+    print(f'Running gen_matrices on {file_paths}')
     start_time = time.time()
 
     dtype = load_dtype('./config/dtype.txt')
-    load_file(input, dtype)
+
+    with Pool(cpu_count()) as pool:
+        pool.starmap(process_file, [(file_path, dtype) for file_path in file_paths])
 
     elapsed_time = time.time() - start_time
     print(f"Took {elapsed_time//86400} days, {elapsed_time//3600%24} hrs, {elapsed_time//60%60} mins, {elapsed_time%60:.2f} secs")

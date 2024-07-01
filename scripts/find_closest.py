@@ -96,7 +96,7 @@ def plot_comparison(days, date1, date2):
             axes[i, 1].legend()
 
         for ax in axes.flat:
-            ax.set_xlabel('Column')
+            ax.set_xlabel('Station')
 
         canvas.draw()
 
@@ -131,7 +131,7 @@ def load_days(year, month, which):
             days[file.split('_')[1].split('.')[0]] = matrix
     return days
 
-def load_all():
+def load_all(which):
     '''
     Load all the days from the output path.
 
@@ -142,7 +142,7 @@ def load_all():
     for dir in os.listdir('./output'):
         for dir_month in os.listdir(f'./output/{dir}'):
             for file in os.listdir(f'./output/{dir}/{dir_month}'):
-                if file.endswith('.npy'):
+                if file.startswith(which) and file.endswith('.npy'):
                     matrix = load_matrix(f'./output/{dir}/{dir_month}/{file}')
                     days[file.split('_')[1].split('.')[0]] = matrix
     return days
@@ -169,11 +169,32 @@ def find_closest_day(days, target_day):
             closest_day = key
     return closest_day, closest_distance
 
+def find_KNN(days, target_day, K):
+    '''
+    Find the K closest days to the target day.
+
+    Parameters:
+    days (dict): A dictionary containing the days.
+    target_day (str): The target day.
+    K (int): The number of closest days to find.
+
+    Returns:
+    list: The K closest days and their distances.
+    '''
+    distances = []
+    for key in days.keys():
+        if key == target_day:
+            continue
+        distance = compare_days_frobenius_norm(days[target_day], days[key])
+        distances.append((key, distance))
+    distances.sort(key=lambda x: x[1])
+    return distances[:K]
+
 def run(target, which):
     print(f'Running find_closest for {target} comparing for {which}')
     start = time.time()
 
-    days = load_all()
+    days = load_all(which)
     
     print(f'Target day: {target}')
     print(pd.DataFrame(days[target]))
@@ -186,5 +207,11 @@ def run(target, which):
     
     plot_comparison(days, target, closest_day)
 
+    print('\nClosest 10 days to the target day:')
+    K = 10
+    closest_days = find_KNN(days, target, K)
+    for i, (day, distance) in enumerate(closest_days):
+        print(f'{i+1}. {day} with distance {distance}')
+
     time_elapsed = time.time() - start
-    print(f'Took {time_elapsed//86400} days, {time_elapsed//3600%24} hrs, {time_elapsed//60%60} mins, {time_elapsed%60:.2f} secs')
+    print(f'\nTook {time_elapsed//86400} days, {time_elapsed//3600%24} hrs, {time_elapsed//60%60} mins, {time_elapsed%60:.2f} secs')

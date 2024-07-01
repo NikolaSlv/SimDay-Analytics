@@ -9,18 +9,22 @@ def generate():
     print('Running generate')
     start_time = time.time()
 
+    file_paths_populate_na = []
+    file_paths_filter_stations = []
+    file_paths_gen_matrices = []
     for dir in os.listdir('./data'):
         for file in os.listdir(f'./data/{dir}'):
             if file.endswith('.csv'):
+                # Generate path lists
                 path = f'./data/{dir}/{file}'
-                print(f'Processing {path}')
-                # -----------------------------------------------
-                # Process all .csv files from the data directory
-                # -----------------------------------------------
-                populate_na.run(path)
-                filter_stations.run(path.replace('data', 'data_populated'))
-                gen_matrices.run(path.replace('data', 'data_filtered'))
-                # -----------------------------------------------
+                file_paths_populate_na.append(path)
+                file_paths_filter_stations.append(path.replace('data', 'data_populated'))
+                file_paths_gen_matrices.append(path.replace('data', 'data_filtered'))
+    
+    # Run using multiprocessing
+    populate_na.run_parallel(file_paths_populate_na)
+    filter_stations.run_parallel(file_paths_filter_stations)
+    gen_matrices.run_parallel(file_paths_gen_matrices)
     
     elapsed_time = time.time() - start_time
     print('All data processed')

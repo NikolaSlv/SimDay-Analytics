@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import time
+from multiprocessing import Pool, cpu_count
 
 def load_dtype(file_path):
     '''
@@ -51,8 +52,7 @@ def filter_data(file_path, tx_set):
     None
     '''
     year = os.path.basename(file_path)[:4]
-    if not os.path.exists(f'./data_filtered/{year}'):
-        os.makedirs(f'./data_filtered/{year}')
+    os.makedirs(f'./data_filtered/{year}', exist_ok=True) # Using exist_ok=True to avoid FileExistsError
     output_path = f'./data_filtered/{year}/{os.path.basename(file_path)}'
 
     header = True
@@ -63,15 +63,38 @@ def filter_data(file_path, tx_set):
                     out.write(line)
                     header = False
 
-def run(input):
-    print(f'Running filter_stations on {input}')
+def process_file(file_path, tx_set):
+    '''
+    Process a single file by filtering based on the tx_set.
+
+    Parameters:
+    file_path (str): The path to the file.
+    tx_set (set): The set of concatenated longitude and latitude values.
+
+    Returns:
+    None
+    '''
+    filter_data(file_path, tx_set)
+
+def run_parallel(file_paths):
+    '''
+    Run the processing in parallel for multiple files.
+    
+    Parameters:
+    file_paths (list): List of file paths to process.
+
+    Returns:
+    None
+    '''
+    print(f'Running filter_stations on {file_paths}')
     start_time = time.time()
 
     dtype_stations = load_dtype('./config/dtype_stations.txt')
     stations_data = pd.read_csv('./config/stations.csv', dtype=dtype_stations)
     tx_set = create_set_for_tx(stations_data)
 
-    filter_data(input, tx_set)
-    
+    with Pool(cpu_count()) as pool:
+        pool.starmap(process_file, [(file_path, tx_set) for file_path in file_paths])
+
     elapsed_time = time.time() - start_time
     print(f"Took {elapsed_time//86400} days, {elapsed_time//3600%24} hrs, {elapsed_time//60%60} mins, {elapsed_time%60:.2f} secs")

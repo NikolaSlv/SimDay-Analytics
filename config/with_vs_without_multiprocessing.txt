@@ -1,0 +1,201 @@
+----------------------------------------------------------------------------------------------------
+Without multiprocessing
+----------------------------------------------------------------------------------------------------
+Do you want to generate the matrices? (y/n): y
+Running generate
+Processing ./data/2022/202201.csv
+Running populate_na on ./data/2022/202201.csv
+Took 0.0 days, 0.0 hrs, 3.0 mins, 4.39 secs
+Running filter_stations on ./data_populated/2022/202201.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 24.07 secs
+Running gen_matrices on ./data_filtered/2022/202201.csv
+File loaded: ./data_filtered/2022/202201.csv, shape: (778224, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 27.84 secs
+Processing ./data/2022/202202.csv
+Running populate_na on ./data/2022/202202.csv
+Took 0.0 days, 0.0 hrs, 2.0 mins, 47.19 secs
+Running filter_stations on ./data_populated/2022/202202.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 21.04 secs
+Running gen_matrices on ./data_filtered/2022/202202.csv
+File loaded: ./data_filtered/2022/202202.csv, shape: (702912, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 18.49 secs
+Processing ./data/2022/202203.csv
+Running populate_na on ./data/2022/202203.csv
+Took 0.0 days, 0.0 hrs, 3.0 mins, 5.94 secs
+Running filter_stations on ./data_populated/2022/202203.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 23.39 secs
+Running gen_matrices on ./data_filtered/2022/202203.csv
+File loaded: ./data_filtered/2022/202203.csv, shape: (778224, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 27.00 secs
+Processing ./data/2022/202204.csv
+Running populate_na on ./data/2022/202204.csv
+Took 0.0 days, 0.0 hrs, 2.0 mins, 59.70 secs
+Running filter_stations on ./data_populated/2022/202204.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 22.94 secs
+Running gen_matrices on ./data_filtered/2022/202204.csv
+File loaded: ./data_filtered/2022/202204.csv, shape: (753120, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 24.47 secs
+Processing ./data/2022/202205.csv
+Running populate_na on ./data/2022/202205.csv
+Took 0.0 days, 0.0 hrs, 3.0 mins, 6.17 secs
+Running filter_stations on ./data_populated/2022/202205.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 23.44 secs
+Running gen_matrices on ./data_filtered/2022/202205.csv
+File loaded: ./data_filtered/2022/202205.csv, shape: (778224, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 24.03 secs
+Processing ./data/2022/202206.csv
+Running populate_na on ./data/2022/202206.csv
+Took 0.0 days, 0.0 hrs, 3.0 mins, 0.69 secs
+Running filter_stations on ./data_populated/2022/202206.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 22.75 secs
+Running gen_matrices on ./data_filtered/2022/202206.csv
+File loaded: ./data_filtered/2022/202206.csv, shape: (753120, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 22.72 secs
+Processing ./data/2022/202207.csv
+Running populate_na on ./data/2022/202207.csv
+Took 0.0 days, 0.0 hrs, 3.0 mins, 7.28 secs
+Running filter_stations on ./data_populated/2022/202207.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 23.61 secs
+Running gen_matrices on ./data_filtered/2022/202207.csv
+File loaded: ./data_filtered/2022/202207.csv, shape: (778224, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 24.57 secs
+Processing ./data/2022/202208.csv
+Running populate_na on ./data/2022/202208.csv
+Took 0.0 days, 0.0 hrs, 3.0 mins, 7.30 secs
+Running filter_stations on ./data_populated/2022/202208.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 23.98 secs
+Running gen_matrices on ./data_filtered/2022/202208.csv
+File loaded: ./data_filtered/2022/202208.csv, shape: (778224, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 23.94 secs
+Processing ./data/2022/202209.csv
+Running populate_na on ./data/2022/202209.csv
+Took 0.0 days, 0.0 hrs, 2.0 mins, 58.68 secs
+Running filter_stations on ./data_populated/2022/202209.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 22.36 secs
+Running gen_matrices on ./data_filtered/2022/202209.csv
+File loaded: ./data_filtered/2022/202209.csv, shape: (753120, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 21.07 secs
+Processing ./data/2022/202210.csv
+Running populate_na on ./data/2022/202210.csv
+Took 0.0 days, 0.0 hrs, 3.0 mins, 3.64 secs
+Running filter_stations on ./data_populated/2022/202210.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 23.09 secs
+Running gen_matrices on ./data_filtered/2022/202210.csv
+File loaded: ./data_filtered/2022/202210.csv, shape: (778224, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 23.75 secs
+Processing ./data/2022/202211.csv
+Running populate_na on ./data/2022/202211.csv
+Took 0.0 days, 0.0 hrs, 2.0 mins, 57.93 secs
+Running filter_stations on ./data_populated/2022/202211.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 22.74 secs
+Running gen_matrices on ./data_filtered/2022/202211.csv
+File loaded: ./data_filtered/2022/202211.csv, shape: (753120, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 20.99 secs
+Processing ./data/2022/202212.csv
+Running populate_na on ./data/2022/202212.csv
+Took 0.0 days, 0.0 hrs, 3.0 mins, 4.05 secs
+Running filter_stations on ./data_populated/2022/202212.csv
+Took 0.0 days, 0.0 hrs, 0.0 mins, 23.28 secs
+Running gen_matrices on ./data_filtered/2022/202212.csv
+File loaded: ./data_filtered/2022/202212.csv, shape: (778224, 10)
+Took 0.0 days, 0.0 hrs, 1.0 mins, 23.76 secs
+All data processed
+Took 0.0 days, 0.0 hrs, 57.0 mins, 42.60 secs
+Enter the target day (YYYY-MM-DD) or q to quit: 2022-04-12
+Enter which set of features to compare (mat1/mat2/mat3): mat1
+Running find_closest for 2022-04-12 comparing for mat1
+Target day: 2022-04-12
+              0         1
+0      0.004254  0.004734
+1      0.004254  0.004734
+2      0.004727  0.005291
+3      0.004727  0.005013
+4      0.004254  0.005013
+...         ...       ...
+25099  0.009927  0.008633
+25100  0.010872  0.009190
+25101  0.009454  0.008076
+25102  0.009927  0.008633
+25103  0.009454  0.008355
+
+[25104 rows x 2 columns]
+Closest day to 2022-04-12 is 2022-10-23 with distance 0.33794901612725214
+Matrix for the closest day:
+              0         1
+0      0.004630  0.005059
+1      0.004630  0.005059
+2      0.004630  0.005059
+3      0.005093  0.005325
+4      0.005093  0.005858
+...         ...       ...
+25099  0.006945  0.006124
+25100  0.007408  0.006656
+25101  0.006945  0.006124
+25102  0.006482  0.006124
+25103  0.006019  0.006124
+
+[25104 rows x 2 columns]
+
+----------------------------------------------------------------------------------------------------
+With multiprocessing
+----------------------------------------------------------------------------------------------------
+Do you want to generate the matrices? (y/n): y
+Running generate
+Running populate_na on ['./data/2022/202201.csv', './data/2022/202202.csv', './data/2022/202203.csv', './data/2022/202204.csv', './data/2022/202205.csv', './data/2022/202206.csv', './data/2022/202207.csv', './data/2022/202208.csv', './data/2022/202209.csv', './data/2022/202210.csv', './data/2022/202211.csv', './data/2022/202212.csv']
+Took 0.0 days, 0.0 hrs, 6.0 mins, 26.02 secs
+Running filter_stations on ['./data_populated/2022/202201.csv', './data_populated/2022/202202.csv', './data_populated/2022/202203.csv', './data_populated/2022/202204.csv', './data_populated/2022/202205.csv', './data_populated/2022/202206.csv', './data_populated/2022/202207.csv', './data_populated/2022/202208.csv', './data_populated/2022/202209.csv', './data_populated/2022/202210.csv', './data_populated/2022/202211.csv', './data_populated/2022/202212.csv']
+Took 0.0 days, 0.0 hrs, 1.0 mins, 4.29 secs
+Running gen_matrices on ['./data_filtered/2022/202201.csv', './data_filtered/2022/202202.csv', './data_filtered/2022/202203.csv', './data_filtered/2022/202204.csv', './data_filtered/2022/202205.csv', './data_filtered/2022/202206.csv', './data_filtered/2022/202207.csv', './data_filtered/2022/202208.csv', './data_filtered/2022/202209.csv', './data_filtered/2022/202210.csv', './data_filtered/2022/202211.csv', './data_filtered/2022/202212.csv']
+File loaded: ./data_filtered/2022/202211.csv, shape: (753120, 10)       
+File loaded: ./data_filtered/2022/202202.csv, shape: (702912, 10)       
+File loaded: ./data_filtered/2022/202210.csv, shape: (778224, 10)       
+File loaded: ./data_filtered/2022/202209.csv, shape: (753120, 10)       
+File loaded: ./data_filtered/2022/202206.csv, shape: (753120, 10)       
+File loaded: ./data_filtered/2022/202203.csv, shape: (778224, 10)       
+File loaded: ./data_filtered/2022/202205.csv, shape: (778224, 10)       
+File loaded: ./data_filtered/2022/202207.csv, shape: (778224, 10)       
+File loaded: ./data_filtered/2022/202208.csv, shape: (778224, 10)       
+File loaded: ./data_filtered/2022/202212.csv, shape: (778224, 10)       
+File loaded: ./data_filtered/2022/202201.csv, shape: (778224, 10)       
+File loaded: ./data_filtered/2022/202204.csv, shape: (753120, 10)       
+Took 0.0 days, 0.0 hrs, 5.0 mins, 43.23 secs
+All data processed
+Took 0.0 days, 0.0 hrs, 13.0 mins, 13.55 secs
+Enter the target day (YYYY-MM-DD) or q to quit: 2022-04-12
+Enter which set of features to compare (mat1/mat2/mat3): mat1
+Running find_closest for 2022-04-12 comparing for mat1
+Target day: 2022-04-12
+              0         1
+0      0.004254  0.004734
+1      0.004254  0.004734
+2      0.004727  0.005291
+3      0.004727  0.005013
+4      0.004254  0.005013
+...         ...       ...
+25099  0.009927  0.008633
+25100  0.010872  0.009190
+25101  0.009454  0.008076
+25102  0.009927  0.008633
+25103  0.009454  0.008355
+
+[25104 rows x 2 columns]
+Closest day to 2022-04-12 is 2022-10-23 with distance 0.33794901612725214
+Matrix for the closest day:
+              0         1
+0      0.004630  0.005059
+1      0.004630  0.005059
+2      0.004630  0.005059
+3      0.005093  0.005325
+4      0.005093  0.005858
+...         ...       ...
+25099  0.006945  0.006124
+25100  0.007408  0.006656
+25101  0.006945  0.006124
+25102  0.006482  0.006124
+25103  0.006019  0.006124
+
+[25104 rows x 2 columns]
+
+----------------------------------------------------------------------------------------------------
+Processor	Intel(R) Xeon(R) W-2133 CPU @ 3.60GHz, 3600 Mhz, 6 Core(s), 12 Logical Processor(s)
+----------------------------------------------------------------------------------------------------
