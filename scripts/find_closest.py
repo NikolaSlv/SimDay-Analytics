@@ -235,18 +235,22 @@ def calc_MAPE(result, target_day, which):
         result[i] = (day, distance, mape)
 
 def run(target, which):
-    print(f'Running find_closest for {target} comparing for {which}')
-    MAPE = input('Calculate MAPE for the closest days? (y/n): ').lower()
+    # print(f'Running find_closest for {target} comparing for {which}')
+    # MAPE = input('Calculate MAPE for the closest days? (y/n): ').lower()
     start = time.time()
 
     days = load_all(which)
     
-    print(f'Target day: {target}')
-    print(pd.DataFrame(days[target]))
+    # print(f'Target day: {target}')
+    # print(pd.DataFrame(days[target]))
     
     K = 10
     closest_days = find_KNN(days, target, K)
     # plot_comparison(days, target, closest_days[0][0])
+
+    # Return the K closest days and their distances (closest_days[i][0] for day, closest_days[i][1] for distance)
+    print(closest_days)
+    return closest_days
 
     if MAPE == 'y':
         calc_MAPE(closest_days, target, which)
