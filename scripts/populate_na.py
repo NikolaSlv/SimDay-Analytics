@@ -76,7 +76,7 @@ def run_parallel(file_paths):
 
     dtype = load_dtype('./config/dtype.txt')
 
-    with Pool(cpu_count()) as pool:
+    with Pool(min(cpu_count(), 61)) as pool:
         pool.starmap(process_file, [(file_path, dtype) for file_path in file_paths])
 
     elapsed_time = time.time() - start_time

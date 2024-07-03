@@ -93,7 +93,7 @@ def run_parallel(file_paths):
     stations_data = pd.read_csv('./config/stations.csv', dtype=dtype_stations)
     tx_set = create_set_for_tx(stations_data)
 
-    with Pool(cpu_count()) as pool:
+    with Pool(min(cpu_count(), 61)) as pool:
         pool.starmap(process_file, [(file_path, tx_set) for file_path in file_paths])
 
     elapsed_time = time.time() - start_time

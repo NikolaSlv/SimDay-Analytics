@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from sklearn.decomposition import PCA
+from scripts import gen_matrices
 
 def load_matrix(file_path):
     '''
@@ -147,27 +148,38 @@ def load_all(which):
                     days[file.split('_')[1].split('.')[0]] = matrix
     return days
 
-def find_closest_day(days, target_day):
+def percentage_error(actual, predicted):
     '''
-    Find the closest day to the target day.
+    Compute the percentage error between the actual and predicted values.
 
     Parameters:
-    days (dict): A dictionary containing the days.
-    target_day (str): The target day.
+    actual (numpy.ndarray): The actual values.
+    predicted (numpy.ndarray): The predicted values.
 
     Returns:
-    tuple: The closest day and the distance to it.
+    numpy.ndarray: The percentage error.
     '''
-    closest_day = None
-    closest_distance = float('inf')
-    for key in days.keys():
-        if key == target_day:
-            continue
-        distance = compare_days_frobenius_norm(days[target_day], days[key])
-        if distance < closest_distance:
-            closest_distance = distance
-            closest_day = key
-    return closest_day, closest_distance
+    res = np.empty(actual.shape)
+    for i in range(actual.shape[0]):
+        for j in range(actual.shape[1]):
+            if actual[i, j] != 0:
+                res[i, j] = (actual[i, j] - predicted[i, j]) / actual[i, j]
+            else:
+                res[i, j] = predicted[i, j] / np.mean(actual)
+    return res
+
+def mean_absolute_percentage_error(y_true, y_pred): 
+    '''
+    Compute the mean absolute percentage error between the actual and predicted values.
+
+    Parameters:
+    y_true (numpy.ndarray): The actual values.
+    y_pred (numpy.ndarray): The predicted values.
+
+    Returns:
+    float: The mean absolute percentage error.
+    '''
+    return np.mean(np.abs(percentage_error(np.asarray(y_true), np.asarray(y_pred)))) * 100
 
 def find_KNN(days, target_day, K):
     '''
@@ -190,8 +202,41 @@ def find_KNN(days, target_day, K):
     distances.sort(key=lambda x: x[1])
     return distances[:K]
 
+def calc_MAPE(result, target_day, which):
+    '''
+    Compute the Mean Absolute Percentage Error (MAPE) for each of the K closest days.
+
+    Parameters:
+    result (list): The list of the K closest days and their distances.
+    target_day (str): The target day.
+
+    Returns:
+    None
+    '''
+    year = target_day.split('-')[0]
+    month = target_day.split('-')[1]
+    ym = year + month
+    file_paths = [f'./data_filtered/{year}/{ym}.csv']
+
+    for i, (day, distance) in enumerate(result):
+        year = day.split('-')[0]
+        month = day.split('-')[1]
+        ym = year + month
+        file_paths.append(f'./data_filtered/{year}/{ym}.csv')
+
+    data = gen_matrices.run_parallel(file_paths, normalize=False, save=False)
+
+    for i, (day, distance) in enumerate(result):
+        target_day_matrix = data[target_day][which]
+        day_matrix = data[day][which]
+        
+        mape = mean_absolute_percentage_error(target_day_matrix, day_matrix)
+        
+        result[i] = (day, distance, mape)
+
 def run(target, which):
     print(f'Running find_closest for {target} comparing for {which}')
+    MAPE = input('Calculate MAPE for the closest days? (y/n): ').lower()
     start = time.time()
 
     days = load_all(which)
@@ -199,19 +244,28 @@ def run(target, which):
     print(f'Target day: {target}')
     print(pd.DataFrame(days[target]))
     
-    closest_day, closest_distance = find_closest_day(days, target)
-
-    print(f'Closest day to {target} is {closest_day} with distance {closest_distance}')
-    print('Matrix for the closest day:')
-    print(pd.DataFrame(days[closest_day]))
-    
-    plot_comparison(days, target, closest_day)
-
-    print('\nClosest 10 days to the target day:')
     K = 10
     closest_days = find_KNN(days, target, K)
-    for i, (day, distance) in enumerate(closest_days):
-        print(f'{i+1}. {day} with distance {distance}')
+    # plot_comparison(days, target, closest_days[0][0])
+
+    if MAPE == 'y':
+        calc_MAPE(closest_days, target, which)
+    
+        closest_day, closest_distance, closest_mape = closest_days[0][0], closest_days[0][1], closest_days[0][2]
+        print(f'\nClosest day to the target day: {closest_day} with distance {closest_distance} and MAPE {closest_mape}')
+        print(pd.DataFrame(days[closest_day]))
+
+        print('\nClosest 10 days to the target day:')
+        for i, (day, distance, mape) in enumerate(closest_days):
+            print(f'{i+1}. Day: {day}, Distance: {distance}, MAPE: {mape}')
+    else:
+        closest_day, closest_distance = closest_days[0][0], closest_days[0][1]
+        print(f'\nClosest day to the target day: {closest_day} with distance {closest_distance}')
+        print(pd.DataFrame(days[closest_day]))
+
+        print('\nClosest 10 days to the target day:')
+        for i, (day, distance) in enumerate(closest_days):
+            print(f'{i+1}. Day: {day}, Distance: {distance}')
 
     time_elapsed = time.time() - start
     print(f'\nTook {time_elapsed//86400} days, {time_elapsed//3600%24} hrs, {time_elapsed//60%60} mins, {time_elapsed%60:.2f} secs')

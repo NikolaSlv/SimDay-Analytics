@@ -24,23 +24,6 @@ def load_dtype(file_path):
                 dtype[key] = float
     return dtype
 
-def normalize_matrix_columns(matrix):
-    '''
-    Normalize each column of the matrix.
-
-    Parameters:
-    matrix (ndarray): The matrix to normalize.
-
-    Returns:
-    ndarray: The normalized matrix.
-    '''
-    for i in range(matrix.shape[1]):
-        column = matrix[:, i]
-        norm = np.linalg.norm(column)
-        if norm != 0:
-            matrix[:, i] = column / norm
-    return matrix
-
 def add_segment_to_dict(df, segments, current_segment, current_utc):
     '''
     Add the current segment to the dictionary of segments.
@@ -88,7 +71,7 @@ def split_data_into_segments(df):
 
     return segments
 
-def concatenate_hours(segments):
+def concatenate_hours(segments, normalize):
     '''
     Concatenate the segments into days and normalize each day's matrices column by column.
 
@@ -110,12 +93,6 @@ def concatenate_hours(segments):
             days[day]['mat1'] = np.concatenate((days[day]['mat1'], segments[key][:, :2]), axis=0)
             days[day]['mat2'] = np.concatenate((days[day]['mat2'], segments[key][:, 2:5]), axis=0)
             days[day]['mat3'] = np.concatenate((days[day]['mat3'], np.concatenate((segments[key][:, 5:6], segments[key][:, 7:]), axis=1)), axis=0)
-    
-    # Normalize each day's matrices column by column
-    for day in days:
-        days[day]['mat1'] = normalize_matrix_columns(days[day]['mat1'])
-        days[day]['mat2'] = normalize_matrix_columns(days[day]['mat2'])
-        days[day]['mat3'] = normalize_matrix_columns(days[day]['mat3'])
 
     return days
 
@@ -137,7 +114,7 @@ def save_matrices(year, month, days, output_path):
         np.save(output_path + f'mat2_{key}.npy', days[key]['mat2'])
         np.save(output_path + f'mat3_{key}.npy', days[key]['mat3'])
 
-def process_file(file_path, dtype):
+def process_file(file_path, dtype, normalize, save):
     '''
     Processes a single file.
 
@@ -148,26 +125,45 @@ def process_file(file_path, dtype):
     Returns:
     None
     '''
-    df = pd.read_csv(file_path, dtype=dtype)
+    try:
+        df = pd.read_csv(file_path, dtype=dtype)
+    except pd.errors.ParserError as e:
+        print(f"Error processing {file_path}: {e}")
+        return None
     df = df.iloc[:, 1:]  # Remove the first column
     print(f"File loaded: {file_path}, shape: {df.shape}")
 
+    # Normalize the data (last 8 columns)
+    df.iloc[:, -8:] = df.iloc[:, -8:].apply(lambda x: x / np.linalg.norm(x) if np.linalg.norm(x) != 0 else x, axis=0)
+    # df.iloc[:, -8:] = df.iloc[:, -8:].apply(lambda x: (x - x.mean()) / x.std(), axis=0) - another method of normalization, but worse MAPE results
+
     segments = split_data_into_segments(df)
-    days = concatenate_hours(segments)
+    days = concatenate_hours(segments, normalize)
 
-    year_month = file_path.split('/')[-1].split('.')[0]
-    year = year_month[:4]
-    month = year_month[4:]
-    save_matrices(year, month, days, './output/')
+    if save:
+        year_month = file_path.split('/')[-1].split('.')[0]
+        year = year_month[:4]
+        month = year_month[4:]
+        save_matrices(year, month, days, './output/')
+    else:
+        return days
 
-def run_parallel(file_paths):
+def run_parallel(file_paths, normalize=True, save=True):
     print(f'Running gen_matrices on {file_paths}')
     start_time = time.time()
 
     dtype = load_dtype('./config/dtype.txt')
 
-    with Pool(cpu_count()) as pool:
-        pool.starmap(process_file, [(file_path, dtype) for file_path in file_paths])
+    res = None
+    with Pool(min(cpu_count(), 61)) as pool:
+        res = pool.starmap(process_file, [(file_path, dtype, normalize, save) for file_path in file_paths])
+
+    all_dict = None
+    if res is not None:
+        all_dict = {key: value for days in res if days is not None for key, value in days.items()}
 
     elapsed_time = time.time() - start_time
     print(f"Took {elapsed_time//86400} days, {elapsed_time//3600%24} hrs, {elapsed_time//60%60} mins, {elapsed_time%60:.2f} secs")
+
+    if all_dict is not None:
+        return all_dict
