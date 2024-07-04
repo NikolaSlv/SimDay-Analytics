@@ -7,6 +7,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter as tk
 from sklearn.decomposition import PCA
 from scripts import gen_matrices
+from multiprocessing import Pool, cpu_count
 
 def load_matrix(file_path):
     '''
@@ -132,20 +133,37 @@ def load_days(year, month, which):
             days[file.split('_')[1].split('.')[0]] = matrix
     return days
 
-def load_all(which):
+def load_single(days, file_path):
+    '''
+    Load a single day from the output path.
+
+    Parameters:
+    days (dict): A dictionary containing the days.
+
+    Returns:
+    None
+    '''
+    matrix = load_matrix(file_path)
+    file = os.path.basename(file_path)
+    days[file[0:4]][file.split('_')[1].split('.')[0]] = matrix
+
+def load_all():
     '''
     Load all the days from the output path.
 
     Returns:
-    dict: A dictionary containing the days.
+    dict: a dictionary of dictionaries containing the days
     '''
-    days = {}
+    days = {'mat1': {}, 'mat2': {}, 'mat3': {}}
+    file_paths = []
     for dir in os.listdir('./output'):
         for dir_month in os.listdir(f'./output/{dir}'):
             for file in os.listdir(f'./output/{dir}/{dir_month}'):
-                if file.startswith(which) and file.endswith('.npy'):
-                    matrix = load_matrix(f'./output/{dir}/{dir_month}/{file}')
-                    days[file.split('_')[1].split('.')[0]] = matrix
+                file_paths.append(f'./output/{dir}/{dir_month}/{file}')
+                
+    for file_path in file_paths:
+        load_single(days, file_path)
+
     return days
 
 def percentage_error(actual, predicted):
@@ -181,7 +199,7 @@ def mean_absolute_percentage_error(y_true, y_pred):
     '''
     return np.mean(np.abs(percentage_error(np.asarray(y_true), np.asarray(y_pred)))) * 100
 
-def find_KNN(days, target_day, K):
+def find_KNN(days, target_day, which, K):
     '''
     Find the K closest days to the target day.
 
@@ -194,10 +212,10 @@ def find_KNN(days, target_day, K):
     list: The K closest days and their distances.
     '''
     distances = []
-    for key in days.keys():
+    for key in days[which].keys():
         if key == target_day:
             continue
-        distance = compare_days_frobenius_norm(days[target_day], days[key])
+        distance = compare_days_frobenius_norm(days[which][target_day], days[which][key])
         distances.append((key, distance))
     distances.sort(key=lambda x: x[1])
     return distances[:K]
@@ -234,24 +252,25 @@ def calc_MAPE(result, target_day, which):
         
         result[i] = (day, distance, mape)
 
-def run(target, which):
+def run(target, which, days):
     # print(f'Running find_closest for {target} comparing for {which}')
     # MAPE = input('Calculate MAPE for the closest days? (y/n): ').lower()
     start = time.time()
-
-    days = load_all(which)
     
     # print(f'Target day: {target}')
     # print(pd.DataFrame(days[target]))
     
     K = 10
-    closest_days = find_KNN(days, target, K)
-    # plot_comparison(days, target, closest_days[0][0])
+    closest_days = find_KNN(days, target, which, K)
 
-    # Return the K closest days and their distances (closest_days[i][0] for day, closest_days[i][1] for distance)
+    time_elapsed = time.time() - start
+    print(f'\nTook {time_elapsed//86400} days, {time_elapsed//3600%24} hrs, {time_elapsed//60%60} mins, {time_elapsed%60:.2f} secs')
+
+    # Return a list of the K closest days and their distances (closest_days[0][0] is the closest day, closest_days[0][1] is the distance to the target day)
     print(closest_days)
     return closest_days
 
+    # plot_comparison(days, target, closest_days[0][0])
     if MAPE == 'y':
         calc_MAPE(closest_days, target, which)
     
@@ -270,6 +289,3 @@ def run(target, which):
         print('\nClosest 10 days to the target day:')
         for i, (day, distance) in enumerate(closest_days):
             print(f'{i+1}. Day: {day}, Distance: {distance}')
-
-    time_elapsed = time.time() - start
-    print(f'\nTook {time_elapsed//86400} days, {time_elapsed//3600%24} hrs, {time_elapsed//60%60} mins, {time_elapsed%60:.2f} secs')

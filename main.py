@@ -31,6 +31,12 @@ def generate():
     print(f"Took {elapsed_time//86400} days, {elapsed_time//3600%24} hrs, {elapsed_time//60%60} mins, {elapsed_time%60:.2f} secs")
 
 if __name__ == '__main__':
+    start = time.time()
+    print('Loading output data...')
+    days = find_closest.load_all()
+    took = time.time() - start
+    print(f'Took {took//86400} days, {took//3600%24} hrs, {took//60%60} mins, {took%60:.2f} secs')
+
     q = input('Do you want to generate the matrices? (y/n): ')
     if q == 'y':
         generate()
@@ -39,4 +45,4 @@ if __name__ == '__main__':
         if target == 'q':
             break
         which = input('Enter which set of features to compare (mat1/mat2/mat3): ')
-        find_closest.run(target, which)
+        find_closest.run(target, which, days)
