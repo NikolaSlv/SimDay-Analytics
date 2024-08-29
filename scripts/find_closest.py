@@ -252,6 +252,19 @@ def calc_MAPE(result, target_day, which):
         
         result[i] = (day, distance, mape)
 
+def run_all(which, days):
+    if not os.path.exists('./results'):
+        os.makedirs('./results')
+    with open(f'./results/results_{which}.csv', 'w') as f:
+        f.write('Date,1st closest,2nd closest,3rd closest,4th closest,5th closest,6th closest,7th closest,8th closest,9th closest,10th closest\n')
+        for dir in os.listdir('./output'):
+            for dir_month in os.listdir(f'./output/{dir}'):
+                for file in os.listdir(f'./output/{dir}/{dir_month}'):
+                    if file.endswith('.npy') and file.split('_')[0] == which:
+                        target = file.split('_')[1].split('.')[0]
+                        closest = run(target, which, days)
+                        f.write(f'{target},{",".join(closest)}\n')
+
 def run(target, which, days):
     # print(f'Running find_closest for {target} comparing for {which}')
     # MAPE = input('Calculate MAPE for the closest days? (y/n): ').lower()
@@ -266,9 +279,10 @@ def run(target, which, days):
     time_elapsed = time.time() - start
     print(f'\nTook {time_elapsed//86400} days, {time_elapsed//3600%24} hrs, {time_elapsed//60%60} mins, {time_elapsed%60:.2f} secs')
 
-    # Return a list of the K closest days and their distances (closest_days[0][0] is the closest day, closest_days[0][1] is the distance to the target day)
-    print(closest_days)
-    return closest_days
+    # Return a list of the K closest days (closest_days[0][0] is the closest day, closest_days[0][1] is the distance to the target day)
+    closest_days_dates = [day[0] for day in closest_days]
+    print(f'Closest {K} days to {target}: {closest_days_dates}')
+    return closest_days_dates
 
     # plot_comparison(days, target, closest_days[0][0])
     if MAPE == 'y':

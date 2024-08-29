@@ -1,5 +1,6 @@
 data/
 output/
+results/
 data_filtered/
 data_populated/
 __pycache__/
